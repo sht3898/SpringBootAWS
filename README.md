@@ -9,6 +9,63 @@
 
 
 
+## 인텔리제이로 스프링 부트 시작하기
+
+### 그레이들 프로젝트를 스프링 부트 프로젝트로 변경하기
+
+```java
+buildscript {
+    ext {
+        springBootVersion = '2.1.7.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+    
+group 'com.jojoldu.book'
+version '1.0-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-web')
+    testCompile('org.springframework.boot:spring-boot-starter-web')
+}
+    
+```
+
+* `ext`
+  * build.gradle에서 사용하는 전역변수를 설정하겠다는 의미
+  * 여기서는 springBootVersion 전역 변수로 사용하고 그 값을 2.1.7.RELEASE로 함
+  * 즉, spring-boot-gradle-plugin이라는 스프링 부트 그레이들 플러그인의 2.1.7.RELEASE를 의존성으로 받겠다는 의미
+* `apply plugin`
+  * 앞서 선언한 플러그인 의존성들은 적용할 것인지를 결정하는 코드
+  * io.spring.dependency-management 플러그인은 스프링 부트의 의존성들을 관리해 주는 플러그인이라 꼭 추가해야함
+  * 위의 4개의 플러그인은 자바와 스프링 부트를 사용하기 위해서는 필수 플러그인들이니 항상 추가하는 것이 좋음
+* `repositories`
+  * 각종 의존성(라이브러리)들을 어떤 원격 저장소에서 받을지를 정함
+  * 기본적으로 mavenCentral를 많이 사용하지만, 최근에는 라이브러리 업로드 난이도 때문에 jcenter도 많이 사용
+* `dependencies`
+  * 프로젝트 개발에 필요한 의존성들은 선언하는 곳
+  * compile 메소드 안에 라이브러리의 이름의 앞부분만 추가한 뒤 자동완성(`Ctrl+Space`)를 사용하면 쉽게 완성 가능
+  * 의존성 코드는 직접 작성해도 되고, 자동완성을 만들어도 되지만 특정 버전을 명시하면 안됨
+
+
+
+
+
 ## 스프링 부트에서 테스트 코드를 작성
 
 ### Hello Controller에서 테스트 코드 작성
@@ -104,6 +161,13 @@ public class HelloControllerTest {
 
 
 ### Hello Controller 코드를 롬북으로 전환
+
+web 패키지에 dto 패키지 추가
+
+* dto는 Data Transfer Object(데이터 전송 객체)의 약자로 데이터가 포함된 객체를 한 시스템에서 다른 시스템으로 전달하는 작업을 처리하는 개체
+* Data에 접속하는 객체. 여기서 Data란 일반적인 Database도 될 수 있고, 파일도 될 수 있으며, 메모리도 될 수 있고, 기타 다른 저장소도 될 수 있음
+
+
 
 ```java
 @Getter
@@ -220,3 +284,30 @@ public class HelloControllerTest {
 
 ## 스프링 부트에서 JPA로 데이터베이스 다루기
 
+### 프로젝트에 Spring Data Jpa 적용하기
+
+```java
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.projectlombok:lombok')
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	compile('com.h2database:h2')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+
+}
+```
+
+* `spring-boot-starter-data-jpa`
+  * 스프링 부트용 Spring Data Jpa 추상화 라이브러리
+  * 스프링 부트 버전에 맞춰 자동으로 JPA 관련 라이브러리들의 버전을 관리
+* `h2`
+  * 인메모리 관계형 데이터베이스
+  * 별도의 설치가 필요 없이 프로젝트 의존성만으로 관리할 수 있음
+  * 메모리에서 실행되기 때문에 애플리케이션을 재시작할 때마다 초기화된다는 점을 이용하여 테스트 용도로 많이 사용
+  * 이 책에서는 JPA의 테스트, 로컬 환경에서의 구동에서 사용할 예정
+
+
+
+이후 domain 패키지 생성
+
+* 도메인은 게시글, 댓글, 회원, 정산, 결제 등 소프트웨어에 대한 요구사항 혹은 문제영역
