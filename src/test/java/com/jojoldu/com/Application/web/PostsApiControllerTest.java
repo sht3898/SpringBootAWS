@@ -16,7 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -49,7 +48,7 @@ public class PostsApiControllerTest {
                 .author("author")
                 .build();
 
-        String url = "http://loclhost:" + port + "/api/v1/posts";
+        String url = "http://localhost:" + port + "/api/v1/posts";
 
         // when
         ResponseEntity<Long> responseEntity = restTemplate.
